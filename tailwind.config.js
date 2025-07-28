@@ -17,6 +17,7 @@ module.exports = {
         wiggle: "wiggle 1.5s ease-in-out infinite",
         popup: "popup 0.25s ease-in-out",
         shimmer: "shimmer 3s ease-out infinite alternate",
+        "bounce-horizontal": "bounce-horizontal 1s ease-in-out infinite",
       },
       keyframes: {
         opacity: {
@@ -54,15 +55,32 @@ module.exports = {
           "50%": { backgroundPosition: "100% 50%" },
           "100%": { backgroundPosition: "0% 50%" },
         },
+        "bounce-horizontal": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "50%": { transform: "translateX(5px)" },
+        },
       },
     },
   },
   plugins: [require("daisyui")],
   daisyui: {
-    // Light & dark themes are added by default (it switches automatically based on OS settings)
-    // You can add another theme among the list of 30+
-    // Add "data-theme='theme_name" to any HTML tag to enable the 'theme_name' theme.
-    // https://daisyui.com/
-    themes: ["light", "dark"],
+    themes: [
+      {
+        softer: {
+          "primary": "#e91e63",
+          "secondary": "#f48fb1", 
+          "accent": "#ad1457",
+          "neutral": "#374151",
+          "base-100": "#ffffff",
+          "base-200": "#fef7f7",
+          "base-300": "#fdf2f8",
+          "info": "#0ea5e9",
+          "success": "#22c55e", 
+          "warning": "#f59e0b",
+          "error": "#ef4444",
+        },
+      },
+      "light",
+    ],
   },
 };
