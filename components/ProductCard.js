@@ -18,24 +18,32 @@ const ProductCard = ({
     price,
     originalPrice,
     image,
+    images = [],
     category,
     colors = [],
     sizes = [],
     isNew = false,
     inStock = true
   } = product;
+  
+  // Obtener imagen principal o primera imagen
+  const mainImage = images?.find(img => img.isMain)?.url || images?.[0]?.url || image;
 
   const { addToCart } = useCart();
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [showQuickView, setShowQuickView] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  
+  // Array de todas las imágenes disponibles
+  const allImages = images?.length > 0 ? images : (image ? [{ url: image }] : []);
 
   return (
     <div className={`bg-white border border-gray-200 p-4 group transition-shadow duration-300 hover:shadow-lg ${className}`}>
       {/* Imagen del producto */}
       <div className="relative aspect-square mb-4 overflow-hidden">
         <ProductImage
-          src={image}
+          src={mainImage}
           alt={name}
           containerClassName="w-full h-full"
           className={`transition-all duration-1000 ease-in-out ${applyGrayscale ? 'grayscale hover:grayscale-0' : ''}`}
@@ -130,14 +138,40 @@ const ProductCard = ({
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                  {/* Imagen */}
-                  <div className="aspect-square">
-                    <ProductImage
-                      src={image}
-                      alt={name}
-                      containerClassName="w-full h-full"
-                      className=""
-                    />
+                  {/* Galería de imágenes */}
+                  <div className="space-y-4">
+                    {/* Imagen principal */}
+                    <div className="aspect-square">
+                      <ProductImage
+                        src={allImages[selectedImageIndex]?.url || mainImage}
+                        alt={name}
+                        containerClassName="w-full h-full"
+                        className=""
+                      />
+                    </div>
+                    
+                    {/* Miniaturas */}
+                    {allImages.length > 1 && (
+                      <div className="flex gap-2 overflow-x-auto">
+                        {allImages.map((img, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setSelectedImageIndex(index)}
+                            className={`flex-shrink-0 w-20 h-20 border-2 transition-all duration-200 ${
+                              selectedImageIndex === index 
+                                ? 'border-black' 
+                                : 'border-gray-200 hover:border-gray-400'
+                            }`}
+                          >
+                            <img
+                              src={img.url}
+                              alt={`${name} ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Detalles */}

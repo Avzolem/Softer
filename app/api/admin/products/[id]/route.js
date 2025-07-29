@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongoose";
 import Product from "@/models/Product";
+import { deleteMultipleImages } from "@/libs/cloudinary-delete";
 
 // GET single product
 export async function GET(req, { params }) {
@@ -59,7 +60,8 @@ export async function DELETE(req, { params }) {
   try {
     await connectDB();
     
-    const product = await Product.findByIdAndDelete(params.id);
+    // Primero buscar el producto para obtener las imágenes
+    const product = await Product.findById(params.id);
     
     if (!product) {
       return NextResponse.json(
@@ -68,7 +70,26 @@ export async function DELETE(req, { params }) {
       );
     }
     
-    return NextResponse.json({ message: "Producto eliminado" });
+    // Eliminar imágenes de Cloudinary si existen
+    if (product.images && product.images.length > 0) {
+      const publicIds = product.images.map(img => img.publicId).filter(Boolean);
+      if (publicIds.length > 0) {
+        try {
+          await deleteMultipleImages(publicIds);
+          console.log(`Deleted ${publicIds.length} images from Cloudinary`);
+        } catch (cloudinaryError) {
+          console.error("Error deleting images from Cloudinary:", cloudinaryError);
+          // Continuar con la eliminación del producto aunque falle Cloudinary
+        }
+      }
+    }
+    
+    // Eliminar el producto de la base de datos
+    await Product.findByIdAndDelete(params.id);
+    
+    return NextResponse.json({ 
+      message: "Producto y sus imágenes eliminados exitosamente" 
+    });
   } catch (error) {
     console.error("Delete product error:", error);
     return NextResponse.json(
