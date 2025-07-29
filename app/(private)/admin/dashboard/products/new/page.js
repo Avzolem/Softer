@@ -20,7 +20,7 @@ export default function NewProductPage() {
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
       };
 
-      await apiClient.post("/api/admin/products", productData);
+      await apiClient.post("/admin/products", productData);
       toast.success("Producto creado correctamente");
       router.push("/admin/dashboard/products");
     } catch (error) {

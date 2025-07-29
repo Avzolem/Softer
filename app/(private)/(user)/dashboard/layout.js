@@ -1,18 +1,8 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/libs/next-auth";
-import config from "@/config";
 
-// This is a server-side component to ensure the user is logged in.
-// If not, it will redirect to the login page.
-// It's applied to all subpages of /dashboard in /app/dashboard/*** pages
-// You can also add custom static UI elements like a Navbar, Sidebar, Footer, etc..
-// See https://shipfa.st/docs/tutorials/private-page
+// Esta ruta no se usa en el sistema actual
+// Solo se usa /admin/dashboard para administración
 export default async function LayoutPrivate({ children }) {
-  const session = await auth();
-
-  if (!session) {
-    redirect(config.auth.loginUrl);
-  }
-
-  return <>{children}</>;
+  // Redirigir siempre al home ya que no hay dashboard de usuarios
+  redirect("/");
 }

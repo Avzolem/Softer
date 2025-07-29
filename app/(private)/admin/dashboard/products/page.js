@@ -28,12 +28,17 @@ export default function AdminProductsPage() {
     fetchProducts();
   }, []);
 
+  // Obtener ID del producto (compatible con MongoDB)
+  const getProductId = (product) => {
+    return product._id || product.id;
+  };
+
   // Eliminar producto
   const handleDelete = async () => {
     if (!deleteModal.product) return;
 
     try {
-      await apiClient.delete(`/admin/products/${deleteModal.product.id}`);
+      await apiClient.delete(`/admin/products/${getProductId(deleteModal.product)}`);
       toast.success("Producto eliminado correctamente");
       fetchProducts();
       setDeleteModal({ show: false, product: null });
@@ -46,7 +51,8 @@ export default function AdminProductsPage() {
   // Cambiar estado de stock
   const toggleStock = async (product) => {
     try {
-      await apiClient.put(`/admin/products/${product.id}`, {
+      await apiClient.put(`/admin/products/${getProductId(product)}`, {
+        ...product,
         inStock: !product.inStock
       });
       toast.success("Estado actualizado");
@@ -60,7 +66,8 @@ export default function AdminProductsPage() {
   // Cambiar destacado
   const toggleFeatured = async (product) => {
     try {
-      await apiClient.put(`/admin/products/${product.id}`, {
+      await apiClient.put(`/admin/products/${getProductId(product)}`, {
+        ...product,
         featured: !product.featured
       });
       toast.success("Producto actualizado");
@@ -128,95 +135,89 @@ export default function AdminProductsPage() {
                   </td>
                 </tr>
               ) : (
-                products.map((product) => (
-                  <tr key={product.id}>
-                    <td>
-                      <div className="relative w-16 h-16">
-                        <ProductImage
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover rounded"
-                        />
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        <div className="font-bold">{product.name}</div>
-                        <div className="text-sm opacity-50 truncate max-w-xs">
-                          {product.description}
+                products.map((product) => {
+                  const productId = getProductId(product);
+                  const mainImage = product.images?.find(img => img.isMain) || product.images?.[0];
+                  
+                  return (
+                    <tr key={productId}>
+                      <td>
+                        <div className="relative w-16 h-16">
+                          <ProductImage
+                            src={mainImage?.url || product.image}
+                            alt={product.name}
+                            className="object-cover rounded"
+                          />
                         </div>
-                      </div>
-                    </td>
-                    <td>{product.category}</td>
-                    <td>
-                      <div>
-                        <div className="font-semibold text-pink-600">
-                          ${product.price.toLocaleString('es-MX')}
+                      </td>
+                      <td>
+                        <div className="font-semibold">{product.name}</div>
+                        <div className="text-xs text-gray-500">
+                          {product.colors?.length || 0} colores, {product.sizes?.length || 0} tallas
                         </div>
-                        {product.originalPrice && (
-                          <div className="text-sm line-through opacity-50">
-                            ${product.originalPrice.toLocaleString('es-MX')}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <label className="swap">
-                        <input
-                          type="checkbox"
-                          checked={product.inStock}
-                          onChange={() => toggleStock(product)}
-                        />
-                        <div className="swap-on badge badge-success">En stock</div>
-                        <div className="swap-off badge badge-error">Agotado</div>
-                      </label>
-                    </td>
-                    <td>
-                      <label className="swap">
-                        <input
-                          type="checkbox"
-                          checked={product.featured}
-                          onChange={() => toggleFeatured(product)}
-                        />
-                        <div className="swap-on">⭐</div>
-                        <div className="swap-off">☆</div>
-                      </label>
-                    </td>
-                    <td>
-                      <div className="flex gap-2">
-                        <Link
-                          href={`/admin/dashboard/products/edit/${product.id}`}
-                          className="btn btn-sm btn-outline"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </Link>
+                      </td>
+                      <td>
+                        <span className="badge badge-outline">{product.category}</span>
+                      </td>
+                      <td>
+                        <div>
+                          <div className="font-semibold">${product.price}</div>
+                          {product.originalPrice && (
+                            <div className="text-xs text-gray-500 line-through">
+                              ${product.originalPrice}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td>
                         <button
-                          onClick={() => setDeleteModal({ show: true, product })}
-                          className="btn btn-sm btn-error btn-outline"
+                          onClick={() => toggleStock(product)}
+                          className={`btn btn-xs ${product.inStock ? 'btn-success' : 'btn-error'}`}
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
+                          {product.inStock ? 'En stock' : 'Agotado'}
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => toggleFeatured(product)}
+                          className={`btn btn-xs ${product.featured ? 'btn-warning' : 'btn-ghost'}`}
+                        >
+                          {product.featured ? '⭐' : '☆'}
+                        </button>
+                      </td>
+                      <td>
+                        <div className="flex gap-1">
+                          <Link
+                            href={`/admin/dashboard/products/edit/${productId}`}
+                            className="btn btn-sm btn-ghost"
+                          >
+                            ✏️
+                          </Link>
+                          <button
+                            onClick={() => setDeleteModal({ show: true, product })}
+                            className="btn btn-sm btn-error btn-ghost"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Modal de confirmación de eliminación */}
+      {/* Modal de confirmación */}
       {deleteModal.show && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Confirmar eliminación</h3>
+            <h3 className="font-bold text-lg">¿Eliminar producto?</h3>
             <p className="py-4">
-              ¿Estás seguro de que deseas eliminar el producto &quot;{deleteModal.product?.name}&quot;?
+              ¿Estás seguro de que deseas eliminar "{deleteModal.product?.name}"?
+              Esta acción no se puede deshacer.
             </p>
             <div className="modal-action">
               <button

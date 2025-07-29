@@ -45,7 +45,7 @@ export default function OrdersPage() {
       if (filters.search) params.append('search', filters.search);
       params.append('page', filters.page);
       
-      const { data } = await apiClient.get(`/api/admin/orders?${params}`);
+      const { data } = await apiClient.get(`/admin/orders?${params}`);
       setOrders(data.orders);
       setPagination(data.pagination);
     } catch (error) {

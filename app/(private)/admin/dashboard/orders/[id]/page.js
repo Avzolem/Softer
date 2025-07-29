@@ -41,7 +41,7 @@ export default function OrderDetailPage({ params }) {
   const fetchOrder = async () => {
     try {
       setLoading(true);
-      const { data } = await apiClient.get(`/api/admin/orders/${params.id}`);
+      const { data } = await apiClient.get(`/admin/orders/${params.id}`);
       setOrder(data);
       setFormData({
         status: data.status,
@@ -62,7 +62,7 @@ export default function OrderDetailPage({ params }) {
     
     try {
       setUpdating(true);
-      await apiClient.put(`/api/admin/orders/${params.id}`, formData);
+      await apiClient.put(`/admin/orders/${params.id}`, formData);
       toast.success("Pedido actualizado correctamente");
       fetchOrder();
     } catch (error) {

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import ProductImage from "@/components/ProductImage";
+import ProductImageUpload from "@/components/ProductImageUpload";
+import toast from "react-hot-toast";
 
 const CATEGORIES = ["Conjuntos", "Brasieres", "Bodies", "Básicos", "Premium"];
 const COMMON_SIZES = ["32A", "32B", "34A", "34B", "34C", "36A", "36B", "36C", "38B", "S", "M", "L", "XL"];
@@ -15,7 +16,7 @@ export default function ProductForm({ product, onSubmit, loading }) {
     price: product?.price || "",
     originalPrice: product?.originalPrice || "",
     category: product?.category || "",
-    image: product?.image || "",
+    images: product?.images || [],
     colors: product?.colors || [],
     sizes: product?.sizes || [],
     isNew: product?.isNew || false,
@@ -25,6 +26,7 @@ export default function ProductForm({ product, onSubmit, loading }) {
 
   const [newColor, setNewColor] = useState("");
   const [newSize, setNewSize] = useState("");
+  const [pendingImages, setPendingImages] = useState([]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -86,9 +88,79 @@ export default function ProductForm({ product, onSubmit, loading }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleImagesChange = (images) => {
+    setPendingImages(images);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Validar que haya al menos una imagen
+    if (pendingImages.length === 0 && formData.images.length === 0) {
+      toast.error("Debes agregar al menos una imagen del producto");
+      return;
+    }
+    
+    // Subir las nuevas imágenes
+    const uploadedImages = [];
+    
+    for (let i = 0; i < pendingImages.length; i++) {
+      const img = pendingImages[i];
+      
+      // Si es una imagen existente, mantenerla
+      if (img.isExisting) {
+        uploadedImages.push(img.data);
+        continue;
+      }
+      
+      // Si es una nueva imagen, subirla a Cloudinary
+      const formDataToUpload = new FormData();
+      formDataToUpload.append("file", img.file);
+      
+      try {
+        console.log("Subiendo imagen:", img.file.name);
+        const response = await fetch("/api/cloudinary/upload", {
+          method: "POST",
+          body: formDataToUpload,
+          credentials: "include", // Incluir cookies de sesión
+        });
+        
+        const result = await response.json();
+        console.log("Respuesta del servidor:", result);
+        
+        if (!response.ok) {
+          console.error("Error response:", result);
+          throw new Error(result.error || "Error al subir imagen");
+        }
+        
+        uploadedImages.push({
+          ...result.data,
+          isMain: img.isMain || (i === 0 && formData.images.length === 0)
+        });
+        
+        toast.success(`Imagen ${img.file.name} subida correctamente`);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        console.error("Error details:", error.message);
+        toast.error(`Error al subir imagen: ${error.message}`);
+        return;
+      }
+    }
+    
+    // Combinar imágenes existentes con las nuevas
+    const allImages = [...formData.images, ...uploadedImages];
+    
+    // Asegurar que haya una imagen principal
+    const hasMainImage = allImages.some(img => img.isMain);
+    if (!hasMainImage && allImages.length > 0) {
+      allImages[0].isMain = true;
+    }
+    
+    // Enviar el formulario con las imágenes subidas
+    onSubmit({
+      ...formData,
+      images: allImages
+    });
   };
 
   return (
@@ -185,40 +257,16 @@ export default function ProductForm({ product, onSubmit, loading }) {
         </div>
       </div>
 
-      {/* Imagen */}
+      {/* Imágenes */}
       <div className="glass-effect p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Imagen</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">URL de la imagen</span>
-            </label>
-            <input
-              type="text"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              className="input input-bordered"
-              placeholder="https://ejemplo.com/imagen.jpg"
-            />
-            <label className="label">
-              <span className="label-text-alt">Deja vacío para usar placeholder</span>
-            </label>
-          </div>
-
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Vista previa</span>
-            </label>
-            <div className="relative w-32 h-32">
-              <ProductImage
-                src={formData.image}
-                alt="Vista previa"
-                className="w-full h-full object-cover rounded-lg"
-              />
-            </div>
-          </div>
-        </div>
+        <h2 className="text-xl font-semibold mb-4">Imágenes del Producto</h2>
+        <ProductImageUpload 
+          images={formData.images}
+          onImagesChange={handleImagesChange}
+        />
+        <p className="text-sm text-gray-600 mt-2">
+          Las imágenes se subirán automáticamente al guardar el producto.
+        </p>
       </div>
 
       {/* Colores */}

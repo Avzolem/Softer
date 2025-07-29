@@ -20,7 +20,7 @@ export default function EditProductPage() {
 
   const fetchProduct = async () => {
     try {
-      const { data } = await apiClient.get(`/api/admin/products/${params.id}`);
+      const { data } = await apiClient.get(`/admin/products/${params.id}`);
       setProduct(data);
     } catch (error) {
       console.error("Error loading product:", error);
@@ -41,7 +41,7 @@ export default function EditProductPage() {
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
       };
 
-      await apiClient.put(`/api/admin/products/${params.id}`, productData);
+      await apiClient.put(`/admin/products/${params.id}`, productData);
       toast.success("Producto actualizado correctamente");
       router.push("/admin/dashboard/products");
     } catch (error) {

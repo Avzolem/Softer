@@ -36,12 +36,25 @@ export default function Dashboard() {
       );
       console.log("API Response:", response);
 
-      setUsers(response.data || []);
-      setPagination({
-        page: parseInt(page),
-        totalPages: response.pagination.totalPages,
-        total: response.pagination.total,
-      });
+      // axios wraps the response, so we need response.data
+      const apiData = response.data;
+      
+      if (apiData && apiData.data && Array.isArray(apiData.data)) {
+        setUsers(apiData.data);
+        setPagination({
+          page: apiData.pagination?.page || parseInt(page),
+          totalPages: apiData.pagination?.totalPages || 1,
+          total: apiData.pagination?.total || apiData.data.length,
+        });
+      } else {
+        // Fallback si no hay datos
+        setUsers([]);
+        setPagination({
+          page: 1,
+          totalPages: 1,
+          total: 0,
+        });
+      }
     } catch (error) {
       console.error("Error fetching users:", error);
       if (error.response?.status === 401) {

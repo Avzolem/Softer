@@ -21,6 +21,11 @@ const orderSchema = mongoose.Schema(
       required: true,
       unique: true
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false
+    },
     customer: {
       name: { type: String, required: true },
       email: { type: String, required: true },

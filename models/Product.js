@@ -27,10 +27,22 @@ const productSchema = mongoose.Schema(
       required: true,
       enum: ["Conjuntos", "Brasieres", "Bodies", "Básicos", "Premium"],
     },
-    image: {
-      type: String,
-      default: null,
-    },
+    images: [{
+      url: {
+        type: String,
+        required: true,
+      },
+      publicId: {
+        type: String,
+        required: true,
+      },
+      width: Number,
+      height: Number,
+      isMain: {
+        type: Boolean,
+        default: false,
+      }
+    }],
     colors: [{
       type: String,
       required: true,

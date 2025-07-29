@@ -17,28 +17,32 @@ const ProductImage = ({
   // Si no hay src, mostrar placeholder elegante
   if (!src) {
     return (
-      <div className={`bg-gradient-to-br ${fallbackGradient} flex items-center justify-center ${className} rounded-lg`}>
-        <div className="text-center p-8">
-          <div className="w-16 h-16 mx-auto mb-3 opacity-40">
-            {/* Icono elegante de lencería */}
-            <svg viewBox="0 0 100 100" fill="none" className="w-full h-full text-pink-400">
+      <div className={`bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 flex items-center justify-center ${className} rounded-lg border border-gray-200`}>
+        <div className="text-center p-6">
+          <div className="w-24 h-24 mx-auto mb-3 opacity-30">
+            {/* Logo Softer como placeholder */}
+            <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
               <defs>
-                <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#e91e63" />
-                  <stop offset="100%" stopColor="#f48fb1" />
+                <linearGradient id="softerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#000000" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="#000000" stopOpacity="0.6" />
                 </linearGradient>
               </defs>
-              {/* Diseño abstracto de lencería */}
-              <ellipse cx="50" cy="30" rx="20" ry="15" fill="url(#iconGradient)" opacity="0.6"/>
-              <ellipse cx="35" cy="55" rx="15" ry="12" fill="url(#iconGradient)" opacity="0.4"/>
-              <ellipse cx="65" cy="55" rx="15" ry="12" fill="url(#iconGradient)" opacity="0.4"/>
-              <path d="M30 40 Q50 30 70 40 Q50 50 30 40" fill="url(#iconGradient)" opacity="0.3"/>
-              <circle cx="50" cy="75" r="8" fill="url(#iconGradient)" opacity="0.2"/>
+              {/* S elegante estilizada */}
+              <path d="M30 35 Q30 20, 50 20 Q70 20, 70 35 Q70 50, 50 50 Q30 50, 30 65 Q30 80, 50 80 Q70 80, 70 65" 
+                    stroke="url(#softerGradient)" 
+                    strokeWidth="8" 
+                    strokeLinecap="round" 
+                    fill="none" 
+                    opacity="0.4"/>
+              {/* Detalles decorativos */}
+              <circle cx="35" cy="30" r="3" fill="url(#softerGradient)" opacity="0.3"/>
+              <circle cx="65" cy="70" r="3" fill="url(#softerGradient)" opacity="0.3"/>
             </svg>
           </div>
-          <span className="text-pink-500 text-sm font-medium opacity-70">{fallbackText}</span>
-          <div className="mt-2 text-xs text-pink-400 opacity-50">
-            Próximamente imagen real
+          <div className="space-y-1">
+            <span className="text-gray-400 text-xs font-light tracking-wider uppercase">Softer</span>
+            <div className="text-gray-500 text-sm">{fallbackText || "Imagen no disponible"}</div>
           </div>
         </div>
       </div>

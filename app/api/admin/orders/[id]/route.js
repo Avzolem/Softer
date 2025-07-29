@@ -1,83 +1,54 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { orders } from "@/data/orders";
+import connectDB from "@/libs/mongoose";
+import Order from "@/models/Order";
 
-// GET - Obtener una orden por ID
+// GET single order
 export async function GET(req, { params }) {
   try {
-    // Verificar autenticación de admin
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    
-    if (!token || token.role !== "admin") {
-      return NextResponse.json(
-        { error: "No autorizado" },
-        { status: 401 }
-      );
-    }
-    
-    const order = orders.find(o => o.id === params.id || o._id === params.id);
+    await connectDB();
+    const order = await Order.findById(params.id).populate('user', 'name email');
     
     if (!order) {
       return NextResponse.json(
-        { error: "Orden no encontrada" },
+        { error: "Pedido no encontrado" },
         { status: 404 }
       );
     }
     
     return NextResponse.json(order);
-    
   } catch (error) {
-    console.error("Error fetching order:", error);
+    console.error("Get order error:", error);
     return NextResponse.json(
-      { error: "Error al obtener la orden" },
+      { error: "Error al obtener pedido" },
       { status: 500 }
     );
   }
 }
 
-// PUT - Actualizar orden (simulado para demo)
+// PUT update order
 export async function PUT(req, { params }) {
   try {
-    // Verificar autenticación de admin
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    await connectDB();
+    const data = await req.json();
     
-    if (!token || token.role !== "admin") {
+    const order = await Order.findByIdAndUpdate(
+      params.id,
+      data,
+      { new: true, runValidators: true }
+    ).populate('user', 'name email');
+    
+    if (!order) {
       return NextResponse.json(
-        { error: "No autorizado" },
-        { status: 401 }
-      );
-    }
-    
-    const body = await req.json();
-    const { status, paymentStatus, trackingNumber, notes } = body;
-    
-    const orderIndex = orders.findIndex(o => o.id === params.id || o._id === params.id);
-    
-    if (orderIndex === -1) {
-      return NextResponse.json(
-        { error: "Orden no encontrada" },
+        { error: "Pedido no encontrado" },
         { status: 404 }
       );
     }
     
-    // Actualizar campos permitidos (simulado)
-    const updatedOrder = {
-      ...orders[orderIndex],
-      ...(status && { status }),
-      ...(paymentStatus && { paymentStatus }),
-      ...(trackingNumber !== undefined && { trackingNumber }),
-      ...(notes !== undefined && { notes }),
-      updatedAt: new Date().toISOString()
-    };
-    
-    // Nota: En un entorno real, aquí actualizarías en la base de datos
-    
-    return NextResponse.json(updatedOrder);
-    
+    return NextResponse.json(order);
   } catch (error) {
-    console.error("Error updating order:", error);
+    console.error("Update order error:", error);
     return NextResponse.json(
-      { error: "Error al actualizar la orden" },
+      { error: "Error al actualizar pedido" },
       { status: 500 }
     );
   }

@@ -81,13 +81,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       // Refresh user data if session is updated
       if (trigger === "update" && session?.user) {
-        try {
-          const dbUser = await User.findById(token.sub);
-          if (dbUser) {
-            token.role = dbUser.role || "user";
+        // Skip database lookup for admin credentials user
+        if (token.sub === "admin-user") {
+          token.role = "admin";
+        } else {
+          try {
+            const dbUser = await User.findById(token.sub);
+            if (dbUser) {
+              token.role = dbUser.role || "user";
+            }
+          } catch (error) {
+            console.error("Error fetching user role:", error);
           }
-        } catch (error) {
-          console.error("Error fetching user role:", error);
         }
       }
 
@@ -98,12 +103,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.sub;
 
         // Always fetch fresh role from database
-        try {
-          const dbUser = await User.findById(token.sub);
-          session.user.role = dbUser?.role || "user";
-        } catch (error) {
-          console.error("Error fetching user role:", error);
-          session.user.role = token.role || "user";
+        // Skip database lookup for admin credentials user
+        if (token.sub === "admin-user") {
+          session.user.role = "admin";
+        } else {
+          try {
+            const dbUser = await User.findById(token.sub);
+            session.user.role = dbUser?.role || "user";
+          } catch (error) {
+            console.error("Error fetching user role:", error);
+            session.user.role = token.role || "user";
+          }
         }
       }
       return session;
@@ -183,13 +193,18 @@ export const authOptions = {
         token.name = user.name;
       }
       if (trigger === "update" && session?.user) {
-        try {
-          const dbUser = await User.findById(token.sub);
-          if (dbUser) {
-            token.role = dbUser.role || "user";
+        // Skip database lookup for admin credentials user
+        if (token.sub === "admin-user") {
+          token.role = "admin";
+        } else {
+          try {
+            const dbUser = await User.findById(token.sub);
+            if (dbUser) {
+              token.role = dbUser.role || "user";
+            }
+          } catch (error) {
+            console.error("Error fetching user role:", error);
           }
-        } catch (error) {
-          console.error("Error fetching user role:", error);
         }
       }
       return token;
@@ -197,12 +212,17 @@ export const authOptions = {
     async session({ session, token }) {
       if (session?.user) {
         session.user.id = token.sub;
-        try {
-          const dbUser = await User.findById(token.sub);
-          session.user.role = dbUser?.role || "user";
-        } catch (error) {
-          console.error("Error fetching user role:", error);
-          session.user.role = token.role || "user";
+        // Skip database lookup for admin credentials user
+        if (token.sub === "admin-user") {
+          session.user.role = "admin";
+        } else {
+          try {
+            const dbUser = await User.findById(token.sub);
+            session.user.role = dbUser?.role || "user";
+          } catch (error) {
+            console.error("Error fetching user role:", error);
+            session.user.role = token.role || "user";
+          }
         }
       }
       return session;

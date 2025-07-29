@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import toast from "react-hot-toast";
 
 // Admin sidebar navigation options
 const sidebarOptions = [
@@ -38,8 +39,9 @@ const sidebarOptions = [
 export default function Sidebar() {
   const pathname = usePathname();
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: "/" });
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/admin/login" });
+    toast.success("Sesión cerrada");
   };
 
   return (
