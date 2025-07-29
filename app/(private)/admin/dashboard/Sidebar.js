@@ -5,6 +5,8 @@ import {
   HomeIcon,
   UsersIcon,
   ArrowLeftOnRectangleIcon,
+  ShoppingBagIcon,
+  CubeIcon,
 } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -17,8 +19,18 @@ const sidebarOptions = [
     icon: HomeIcon,
   },
   {
+    href: "/admin/dashboard/products",
+    label: "Productos",
+    icon: ShoppingBagIcon,
+  },
+  {
+    href: "/admin/dashboard/orders",
+    label: "Pedidos",
+    icon: CubeIcon,
+  },
+  {
     href: "/admin/dashboard/users",
-    label: "Users",
+    label: "Usuarios",
     icon: UsersIcon,
   },
 ];

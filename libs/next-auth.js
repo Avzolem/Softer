@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import config from "@/config";
 import connectMongo from "./mongo";
@@ -10,6 +11,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // Set any random key in .env.local
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
+    // Admin credentials provider
+    CredentialsProvider({
+      id: "admin-credentials",
+      name: "Admin Login",
+      credentials: {
+        username: { label: "Usuario", type: "text" },
+        password: { label: "Contraseña", type: "password" }
+      },
+      async authorize(credentials) {
+        // Verificar credenciales de admin
+        if (credentials?.username === "solesuave" && credentials?.password === "kipo") {
+          return {
+            id: "admin-user",
+            name: "Administrador",
+            email: "admin@softer.mx",
+            role: "admin",
+            image: null,
+          };
+        }
+        return null;
+      },
+    }),
     GoogleProvider({
       // Follow the "Login with Google" tutorial to get your credentials
       clientId: process.env.GOOGLE_ID,
@@ -52,6 +75,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // Include user role in JWT token
       if (user) {
         token.role = user.role || "user";
+        token.email = user.email;
+        token.name = user.name;
       }
 
       // Refresh user data if session is updated
@@ -98,6 +123,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
+    // Admin credentials provider
+    CredentialsProvider({
+      id: "admin-credentials",
+      name: "Admin Login",
+      credentials: {
+        username: { label: "Usuario", type: "text" },
+        password: { label: "Contraseña", type: "password" }
+      },
+      async authorize(credentials) {
+        // Verificar credenciales de admin
+        if (credentials?.username === "solesuave" && credentials?.password === "kipo") {
+          return {
+            id: "admin-user",
+            name: "Administrador",
+            email: "admin@softer.mx",
+            role: "admin",
+            image: null,
+          };
+        }
+        return null;
+      },
+    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
@@ -132,6 +179,8 @@ export const authOptions = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.role = user.role || "user";
+        token.email = user.email;
+        token.name = user.name;
       }
       if (trigger === "update" && session?.user) {
         try {

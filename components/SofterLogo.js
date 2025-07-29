@@ -1,5 +1,5 @@
 // Componente del logo de Softer
-const SofterLogo = ({ className = "w-8 h-8", showText = true }) => {
+const SofterLogo = ({ showText = true }) => {
   return (
     <div className="flex items-center">
       {/* Texto del logo */}
