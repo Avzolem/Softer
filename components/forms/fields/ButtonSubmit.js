@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingCircle from "./LoadingCircle";
+import LoadingCircle from "../../common/LoadingCircle";
 
 function ButtonSubmit({ isLoading, text = "Send Message" }) {
   return (
