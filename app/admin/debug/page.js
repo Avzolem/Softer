@@ -115,7 +115,7 @@ export default function AdminDebug() {
           <h3 className="font-semibold mb-2">Pasos para depurar:</h3>
           <ol className="list-decimal list-inside space-y-1 text-sm">
             <li>Verifica el estado actual arriba</li>
-            <li>Si no hay cookie, presiona "Probar Login"</li>
+            <li>Si no hay cookie, presiona &quot;Probar Login&quot;</li>
             <li>Recarga la página después del login</li>
             <li>Intenta ir al dashboard</li>
           </ol>

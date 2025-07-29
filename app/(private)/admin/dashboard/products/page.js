@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import apiClient from "@/libs/api";
-import ProductImage from "@/components/ProductImage";
 import toast from "react-hot-toast";
 
 export default function AdminProductsPage() {
@@ -224,7 +223,7 @@ export default function AdminProductsPage() {
           <div className="modal-box">
             <h3 className="font-bold text-lg">¿Eliminar producto?</h3>
             <p className="py-4">
-              ¿Estás seguro de que deseas eliminar "{deleteModal.product?.name}"?
+              ¿Estás seguro de que deseas eliminar &quot;{deleteModal.product?.name}&quot;?
               Esta acción no se puede deshacer.
             </p>
             <div className="modal-action">
