@@ -1,3 +1,5 @@
+"use client";
+
 import ProductImageUpload from "@/components/ProductImageUpload";
 
 export default function ProductsPage() {
@@ -59,7 +61,7 @@ const [productImage, setProductImage] = useState("");
             <ul className="list-disc list-inside mt-2">
               <li>CLOUDINARY_CLOUD_NAME</li>
               <li>CLOUDINARY_API_KEY</li>
-              <li>CLOUDINARY_API_SECRET (API Secret: REDACTED)</li>
+              <li>CLOUDINARY_API_SECRET</li>
             </ul>
           </div>
         </div>
