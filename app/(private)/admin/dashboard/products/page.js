@@ -85,26 +85,15 @@ export default function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gradient">Gestión de Productos</h1>
-        <div className="flex gap-2">
-          <Link
-            href="/admin/dashboard/products/import"
-            className="btn btn-outline btn-primary"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 001.728 3.272 4.01 4.01 0 002.572 1.004H16a5 5 0 000-10h-1.382a7 7 0 00-12.236 0H2a3 3 0 000 6h2.382z" />
-            </svg>
-            Importar Productos
-          </Link>
-          <Link
-            href="/admin/dashboard/products/new"
-            className="btn btn-primary"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Nuevo Producto
-          </Link>
-        </div>
+        <Link
+          href="/admin/dashboard/products/new"
+          className="btn btn-primary"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Nuevo Producto
+        </Link>
       </div>
 
       {/* Lista de productos */}
