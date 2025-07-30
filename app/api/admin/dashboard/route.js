@@ -51,6 +51,16 @@ export async function GET(request) {
       );
     }
     
+    if (error.message.includes("whitelist") || error.message.includes("Could not connect to any servers")) {
+      return NextResponse.json(
+        { 
+          error: "Error de conexión a MongoDB Atlas. Por favor verifica que la IP de Vercel esté en la whitelist. Ve a MongoDB Atlas > Network Access > Add IP Address y agrega 0.0.0.0/0",
+          details: error.message 
+        },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
       { error: "Error al obtener estadísticas: " + error.message },
       { status: 500 }
