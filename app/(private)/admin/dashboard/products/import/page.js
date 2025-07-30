@@ -161,10 +161,8 @@ export default function ImportProductsPage() {
           if (error.response?.status === 409) {
             // Producto ya existe
             skipped++;
-            console.log(`Omitido: ${productData.name}`);
-          } else {
+            } else {
             errors++;
-            console.error(`Error con ${productData.name}:`, error);
             toast.error(`Error: ${productData.name}`);
           }
         }
@@ -174,7 +172,6 @@ export default function ImportProductsPage() {
       toast.success(`Importación completada: ${imported} productos importados`);
 
     } catch (error) {
-      console.error('Error en importación:', error);
       toast.error('Error durante la importación');
     } finally {
       setImporting(false);

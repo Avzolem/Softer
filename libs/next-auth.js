@@ -91,8 +91,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               token.role = dbUser.role || "user";
             }
           } catch (error) {
-            console.error("Error fetching user role:", error);
-          }
+            }
         }
       }
 
@@ -111,7 +110,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             const dbUser = await User.findById(token.sub);
             session.user.role = dbUser?.role || "user";
           } catch (error) {
-            console.error("Error fetching user role:", error);
             session.user.role = token.role || "user";
           }
         }
@@ -203,8 +201,7 @@ export const authOptions = {
               token.role = dbUser.role || "user";
             }
           } catch (error) {
-            console.error("Error fetching user role:", error);
-          }
+            }
         }
       }
       return token;
@@ -220,7 +217,6 @@ export const authOptions = {
             const dbUser = await User.findById(token.sub);
             session.user.role = dbUser?.role || "user";
           } catch (error) {
-            console.error("Error fetching user role:", error);
             session.user.role = token.role || "user";
           }
         }

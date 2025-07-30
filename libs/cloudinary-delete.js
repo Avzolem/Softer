@@ -10,10 +10,8 @@ cloudinary.config({
 export async function deleteImage(publicId) {
   try {
     const result = await cloudinary.uploader.destroy(publicId);
-    console.log("Cloudinary delete result:", result);
     return result;
   } catch (error) {
-    console.error("Error deleting from Cloudinary:", error);
     throw error;
   }
 }
@@ -24,7 +22,6 @@ export async function deleteMultipleImages(publicIds) {
     const results = await Promise.all(deletePromises);
     return results;
   } catch (error) {
-    console.error("Error deleting multiple images from Cloudinary:", error);
     throw error;
   }
 }

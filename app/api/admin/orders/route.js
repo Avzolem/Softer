@@ -31,7 +31,6 @@ export async function GET(req) {
       }
     });
   } catch (error) {
-    console.error("Get orders error:", error);
     return NextResponse.json(
       { error: "Error al obtener pedidos" },
       { status: 500 }

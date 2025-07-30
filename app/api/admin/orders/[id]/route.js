@@ -17,7 +17,6 @@ export async function GET(req, { params }) {
     
     return NextResponse.json(order);
   } catch (error) {
-    console.error("Get order error:", error);
     return NextResponse.json(
       { error: "Error al obtener pedido" },
       { status: 500 }
@@ -46,7 +45,6 @@ export async function PUT(req, { params }) {
     
     return NextResponse.json(order);
   } catch (error) {
-    console.error("Update order error:", error);
     return NextResponse.json(
       { error: "Error al actualizar pedido" },
       { status: 500 }

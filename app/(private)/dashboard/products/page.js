@@ -15,7 +15,6 @@ export default function ProductsPage() {
               
               <ProductImageUpload 
                 onImageUploaded={(imageData) => {
-                  console.log("Image uploaded:", imageData);
                   // Here you would typically save the image URL to your product
                   // For example:
                   // - imageData.url: The secure URL of the uploaded image

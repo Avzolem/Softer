@@ -32,7 +32,6 @@ export default function ConfirmacionPage() {
       const { data } = await apiClient.get(`/api/orders?id=${orderId}`);
       setOrder(data);
     } catch (error) {
-      console.error('Error fetching order:', error);
       router.push('/catalogo');
     } finally {
       setLoading(false);

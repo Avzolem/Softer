@@ -18,7 +18,6 @@ export async function GET(req, { params }) {
     
     return NextResponse.json(product);
   } catch (error) {
-    console.error("Get product error:", error);
     return NextResponse.json(
       { error: "Error al obtener producto" },
       { status: 500 }
@@ -47,7 +46,6 @@ export async function PUT(req, { params }) {
     
     return NextResponse.json(product);
   } catch (error) {
-    console.error("Update product error:", error);
     return NextResponse.json(
       { error: error.message || "Error al actualizar producto" },
       { status: 500 }
@@ -76,9 +74,7 @@ export async function DELETE(req, { params }) {
       if (publicIds.length > 0) {
         try {
           await deleteMultipleImages(publicIds);
-          console.log(`Deleted ${publicIds.length} images from Cloudinary`);
-        } catch (cloudinaryError) {
-          console.error("Error deleting images from Cloudinary:", cloudinaryError);
+          } catch (cloudinaryError) {
           // Continuar con la eliminación del producto aunque falle Cloudinary
         }
       }
@@ -91,7 +87,6 @@ export async function DELETE(req, { params }) {
       message: "Producto y sus imágenes eliminados exitosamente" 
     });
   } catch (error) {
-    console.error("Delete product error:", error);
     return NextResponse.json(
       { error: "Error al eliminar producto" },
       { status: 500 }

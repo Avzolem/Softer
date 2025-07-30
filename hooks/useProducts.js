@@ -80,7 +80,6 @@ export const useProducts = (filters = {}) => {
       setError(null);
     } catch (err) {
       if (err.name !== 'AbortError') {
-        console.error("Error fetching products:", err);
         setError(err.message);
       }
     } finally {

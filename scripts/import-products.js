@@ -152,14 +152,11 @@ async function importProducts() {
   try {
     // Conectar a MongoDB
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Conectado a MongoDB');
-
     // Limpiar productos existentes (opcional)
     const clearExisting = process.argv.includes('--clear');
     if (clearExisting) {
       await Product.deleteMany({});
-      console.log('Productos existentes eliminados');
-    }
+      }
 
     // Importar productos
     let imported = 0;
@@ -170,7 +167,7 @@ async function importProducts() {
       const exists = await Product.findOne({ name: productData.name });
       
       if (exists) {
-        console.log(`⏭️  Omitido (ya existe): ${productData.name}`);
+        : ${productData.name}`);
         skipped++;
         continue;
       }
@@ -178,21 +175,15 @@ async function importProducts() {
       // Crear nuevo producto
       const product = new Product(productData);
       await product.save();
-      console.log(`✅ Importado: ${productData.name}`);
       imported++;
     }
 
-    console.log(`\n📊 Resumen de importación:`);
-    console.log(`   - ${imported} productos importados`);
-    console.log(`   - ${skipped} productos omitidos`);
-    console.log(`   - Total en base de datos: ${await Product.countDocuments()}`);
+    }`);
 
   } catch (error) {
-    console.error('Error:', error);
-  } finally {
+    } finally {
     await mongoose.disconnect();
-    console.log('\nDesconectado de MongoDB');
-  }
+    }
 }
 
 // Ejecutar importación

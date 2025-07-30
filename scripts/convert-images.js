@@ -12,8 +12,6 @@ async function convertImagesToWebP() {
     // Filtrar solo archivos JPG
     const jpgFiles = files.filter(file => file.toLowerCase().endsWith('.jpg'));
     
-    console.log(`Encontrados ${jpgFiles.length} archivos JPG para convertir`);
-    
     let converted = 0;
     let errors = 0;
     
@@ -31,20 +29,13 @@ async function convertImagesToWebP() {
         await fs.unlink(inputPath);
         
         converted++;
-        console.log(`✓ Convertido: ${file}`);
-      } catch (error) {
-        console.error(`✗ Error con ${file}:`, error.message);
+        } catch (error) {
         errors++;
       }
     }
     
-    console.log(`\n✅ Conversión completada:`);
-    console.log(`   - ${converted} archivos convertidos exitosamente`);
-    console.log(`   - ${errors} errores`);
-    
-  } catch (error) {
-    console.error('Error:', error);
-  }
+    } catch (error) {
+    }
 }
 
 // Ejecutar el script

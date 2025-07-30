@@ -44,7 +44,7 @@ const ProductCard = ({
       <div className="relative aspect-square mb-4 overflow-hidden">
         <ProductImage
           src={mainImage}
-          alt={name}
+          alt={`${name} - ${category || 'Lencería'} Softer - ${description?.substring(0, 50) || 'Producto de alta calidad'}`}
           containerClassName="w-full h-full"
           className={`transition-all duration-1000 ease-in-out ${applyGrayscale ? 'grayscale hover:grayscale-0' : ''}`}
           fallbackGradient="from-gray-100 to-gray-200"
@@ -144,7 +144,7 @@ const ProductCard = ({
                     <div className="aspect-square">
                       <ProductImage
                         src={allImages[selectedImageIndex]?.url || mainImage}
-                        alt={name}
+                        alt={`${name} - Vista ${selectedImageIndex + 1} - ${category || 'Lencería'} Softer`}
                         containerClassName="w-full h-full"
                         className=""
                       />
@@ -165,7 +165,7 @@ const ProductCard = ({
                           >
                             <img
                               src={img.url}
-                              alt={`${name} ${index + 1}`}
+                              alt={`${name} - Miniatura ${index + 1} - ${category || 'Lencería'} Softer`}
                               className="w-full h-full object-cover"
                             />
                           </button>

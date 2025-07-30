@@ -17,7 +17,6 @@ export async function GET(req, { params }) {
     
     return NextResponse.json(user);
   } catch (error) {
-    console.error("Get user error:", error);
     return NextResponse.json(
       { error: "Error al obtener usuario" },
       { status: 500 }
@@ -49,7 +48,6 @@ export async function PUT(req, { params }) {
     
     return NextResponse.json(user);
   } catch (error) {
-    console.error("Update user error:", error);
     return NextResponse.json(
       { error: error.message || "Error al actualizar usuario" },
       { status: 500 }

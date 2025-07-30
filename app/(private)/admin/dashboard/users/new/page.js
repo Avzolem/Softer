@@ -19,7 +19,6 @@ export default function NewUserPage() {
       router.push("/admin/dashboard/users");
       router.refresh();
     } catch (error) {
-      console.error("Error creating user:", error);
       setError(error.response?.data?.error || "Error al crear el usuario");
     } finally {
       setLoading(false);

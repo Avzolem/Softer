@@ -5,19 +5,13 @@ import Product from "@/models/Product";
 // GET - Obtener todos los productos públicos
 export async function GET(req) {
   try {
-    console.log("API /products - Starting request");
-    
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category');
     const featured = searchParams.get('featured');
     const inStock = searchParams.get('inStock');
     
-    console.log("Query params:", { category, featured, inStock });
-    
     // Conectar a MongoDB
     await connectMongo();
-    console.log("MongoDB connected successfully");
-    
     // Construir query
     let query = {};
     
@@ -34,11 +28,8 @@ export async function GET(req) {
     }
     
     // Obtener productos de la base de datos
-    console.log("Fetching products with query:", query);
     const products = await Product.find(query)
       .sort({ featured: -1, sortOrder: 1, createdAt: -1 });
-    
-    console.log(`Found ${products.length} products`);
     
     // Transformar productos para incluir solo la imagen principal
     const publicProducts = products.map(product => {
@@ -67,7 +58,6 @@ export async function GET(req) {
     
     return NextResponse.json(publicProducts);
   } catch (error) {
-    console.error("Error fetching products:", error);
     return NextResponse.json(
       { error: "Error al obtener productos" },
       { status: 500 }

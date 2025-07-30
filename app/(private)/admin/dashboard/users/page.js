@@ -34,8 +34,6 @@ export default function Dashboard() {
       const response = await apiClient.get(
         `/admin/users?page=${page}&limit=${limit}`
       );
-      console.log("API Response:", response);
-
       // axios wraps the response, so we need response.data
       const apiData = response.data;
       
@@ -56,7 +54,6 @@ export default function Dashboard() {
         });
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
       if (error.response?.status === 401) {
         router.push("/auth/signin");
       }

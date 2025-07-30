@@ -85,7 +85,6 @@ export async function POST(req) {
     });
     
   } catch (error) {
-    console.error("Error creating order:", error);
     return NextResponse.json(
       { error: "Error al crear la orden" },
       { status: 500 }
@@ -125,7 +124,6 @@ export async function GET(req) {
     return NextResponse.json(order);
     
   } catch (error) {
-    console.error("Error fetching order:", error);
     return NextResponse.json(
       { error: "Error al obtener la orden" },
       { status: 500 }

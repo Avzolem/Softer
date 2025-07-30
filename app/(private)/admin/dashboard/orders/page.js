@@ -49,8 +49,7 @@ export default function OrdersPage() {
       setOrders(data.orders);
       setPagination(data.pagination);
     } catch (error) {
-      console.error("Error fetching orders:", error);
-    } finally {
+      } finally {
       setLoading(false);
     }
   };

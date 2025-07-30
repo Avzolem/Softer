@@ -24,7 +24,6 @@ export default function NewProductPage() {
       toast.success("Producto creado correctamente");
       router.push("/admin/dashboard/products");
     } catch (error) {
-      console.error("Error creating product:", error);
       toast.error("Error al crear el producto");
     } finally {
       setSaving(false);

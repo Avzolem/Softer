@@ -10,9 +10,7 @@ dotenv.config({ path: '.env.local' });
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error("Error conectando a MongoDB:", error);
+    } catch (error) {
     process.exit(1);
   }
 };
@@ -23,14 +21,10 @@ const seedProducts = async () => {
     await connectDB();
     
     // Limpiar productos existentes
-    console.log("Limpiando productos existentes...");
     await Product.deleteMany({});
     
     // Insertar nuevos productos
-    console.log("Insertando productos mockup...");
     const createdProducts = await Product.insertMany(products);
-    
-    console.log(`✅ Se crearon ${createdProducts.length} productos exitosamente`);
     
     // Mostrar estadísticas
     const stats = {
@@ -45,19 +39,11 @@ const seedProducts = async () => {
       stats.categories[product.category] = (stats.categories[product.category] || 0) + 1;
     });
     
-    console.log("\n📊 Estadísticas:");
-    console.log(`Total: ${stats.total}`);
-    console.log(`Destacados: ${stats.featured}`);
-    console.log(`Nuevos: ${stats.new}`);
-    console.log(`En Stock: ${stats.inStock}`);
-    console.log("Por categoría:");
     Object.entries(stats.categories).forEach(([category, count]) => {
-      console.log(`  ${category}: ${count}`);
-    });
+      });
     
     process.exit(0);
   } catch (error) {
-    console.error("Error sembrando productos:", error);
     process.exit(1);
   }
 };

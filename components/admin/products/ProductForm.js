@@ -118,7 +118,6 @@ export default function ProductForm({ product, onSubmit, loading }) {
       formDataToUpload.append("file", img.file);
       
       try {
-        console.log("Subiendo imagen:", img.file.name);
         const response = await fetch("/api/cloudinary/upload", {
           method: "POST",
           body: formDataToUpload,
@@ -126,10 +125,7 @@ export default function ProductForm({ product, onSubmit, loading }) {
         });
         
         const result = await response.json();
-        console.log("Respuesta del servidor:", result);
-        
         if (!response.ok) {
-          console.error("Error response:", result);
           throw new Error(result.error || "Error al subir imagen");
         }
         
@@ -140,8 +136,6 @@ export default function ProductForm({ product, onSubmit, loading }) {
         
         toast.success(`Imagen ${img.file.name} subida correctamente`);
       } catch (error) {
-        console.error("Error uploading image:", error);
-        console.error("Error details:", error.message);
         toast.error(`Error al subir imagen: ${error.message}`);
         return;
       }

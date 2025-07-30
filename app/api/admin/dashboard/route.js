@@ -10,17 +10,14 @@ export async function GET(request) {
     // Verificar autenticación
     const session = await auth();
     if (!session) {
-      console.log("Dashboard API: No session found");
       return NextResponse.json(
         { error: "No autorizado" },
         { status: 401 }
       );
     }
 
-    console.log("Dashboard API: Connecting to MongoDB...");
     await connectDB();
     
-    console.log("Dashboard API: Fetching statistics...");
     // Obtener estadísticas
     const [productsCount, ordersCount, usersCount] = await Promise.all([
       Product.countDocuments(),
@@ -28,21 +25,12 @@ export async function GET(request) {
       User.countDocuments()
     ]);
     
-    console.log("Dashboard API: Stats fetched successfully", {
-      productsCount,
-      ordersCount,
-      usersCount
-    });
-    
     return NextResponse.json({
       productsCount,
       ordersCount,
       usersCount
     });
   } catch (error) {
-    console.error("Dashboard stats error:", error.message);
-    console.error("Full error:", error);
-    
     // Devolver error más específico
     if (error.message.includes("MONGODB_URI")) {
       return NextResponse.json(

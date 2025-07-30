@@ -23,7 +23,6 @@ export default function EditProductPage() {
       const { data } = await apiClient.get(`/admin/products/${params.id}`);
       setProduct(data);
     } catch (error) {
-      console.error("Error loading product:", error);
       toast.error("Error al cargar el producto");
       router.push("/admin/dashboard/products");
     } finally {
@@ -45,7 +44,6 @@ export default function EditProductPage() {
       toast.success("Producto actualizado correctamente");
       router.push("/admin/dashboard/products");
     } catch (error) {
-      console.error("Error updating product:", error);
       toast.error("Error al actualizar el producto");
     } finally {
       setSaving(false);

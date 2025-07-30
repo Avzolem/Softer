@@ -50,7 +50,6 @@ export default function OrderDetailPage({ params }) {
         notes: data.notes || ""
       });
     } catch (error) {
-      console.error("Error fetching order:", error);
       toast.error("Error al cargar el pedido");
     } finally {
       setLoading(false);
@@ -66,7 +65,6 @@ export default function OrderDetailPage({ params }) {
       toast.success("Pedido actualizado correctamente");
       fetchOrder();
     } catch (error) {
-      console.error("Error updating order:", error);
       toast.error("Error al actualizar el pedido");
     } finally {
       setUpdating(false);

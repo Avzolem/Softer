@@ -110,7 +110,6 @@ export default function CheckoutPage() {
       router.push('/confirmacion');
       
     } catch (error) {
-      console.error('Error creating order:', error);
       toast.error('Error al procesar tu pedido. Por favor intenta de nuevo.');
     } finally {
       setLoading(false);

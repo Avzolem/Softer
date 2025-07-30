@@ -15,17 +15,12 @@ async function createTestOrder() {
   try {
     // Conectar a MongoDB
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log("✅ Conectado a MongoDB");
-
     // Obtener un producto para el pedido
     const product = await Product.findOne({ inStock: true });
     
     if (!product) {
-      console.log("❌ No hay productos disponibles para crear un pedido");
       return;
     }
-
-    console.log("📦 Creando pedido con el producto:", product.name);
 
     // Generar número de orden
     const orderNumber = await Order.generateOrderNumber();
@@ -67,23 +62,12 @@ async function createTestOrder() {
 
     await order.save();
     
-    console.log("\n✅ Pedido creado exitosamente:");
-    console.log("   Número de orden:", order.orderNumber);
-    console.log("   Cliente:", order.customer.name);
-    console.log("   Total: $", order.total);
-    console.log("   Estado:", order.status);
-    console.log("   ID:", order._id);
-    
     // Verificar total de órdenes
     const totalOrders = await Order.countDocuments();
-    console.log(`\n📊 Total de órdenes en la base de datos: ${totalOrders}`);
-
-  } catch (error) {
-    console.error("❌ Error:", error);
-  } finally {
+    } catch (error) {
+    } finally {
     await mongoose.connection.close();
-    console.log("\n🔌 Conexión cerrada");
-  }
+    }
 }
 
 createTestOrder();

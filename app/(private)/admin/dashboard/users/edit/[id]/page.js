@@ -17,18 +17,14 @@ export default function EditUserPage({ params }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        console.log("Fetching user data for ID:", id);
         const response = await apiClient.get(`/admin/users/${id}`);
 
         if (response) {
-          console.log("Setting user data:", response);
           setUserData(response);
         } else {
-          console.error("No data in response");
           setError("Error loading user data");
         }
       } catch (error) {
-        console.error("Error fetching user:", error);
         setError(error.response?.data?.error || "Error loading user");
         if (error.response?.status === 401) {
           router.push("/auth/signin");
@@ -48,12 +44,10 @@ export default function EditUserPage({ params }) {
     setError("");
 
     try {
-      console.log("Submitting data:", data);
       await apiClient.put(`/admin/users/${id}`, data);
       router.push("/admin/dashboard/users");
       router.refresh();
     } catch (error) {
-      console.error("Error updating user:", error);
       setError(error.response?.data?.error || "Error updating user");
     } finally {
       setSaving(false);

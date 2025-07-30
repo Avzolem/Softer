@@ -9,8 +9,6 @@ async function createTestProduct() {
   try {
     // Conectar a MongoDB
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log("Connected to MongoDB");
-
     // Crear un producto de prueba
     const testProduct = new Product({
       name: "Conjunto de Prueba",
@@ -35,18 +33,12 @@ async function createTestProduct() {
 
     // Guardar el producto
     await testProduct.save();
-    console.log("Test product created successfully:", testProduct);
-
     // Verificar que se puede leer
     const products = await Product.find({});
-    console.log(`Total products in database: ${products.length}`);
-
-  } catch (error) {
-    console.error("Error:", error);
-  } finally {
+    } catch (error) {
+    } finally {
     await mongoose.connection.close();
-    console.log("Connection closed");
-  }
+    }
 }
 
 createTestProduct();

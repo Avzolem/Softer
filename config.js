@@ -5,7 +5,7 @@ const config = {
   appName: "Softer",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
   appDescription:
-    "Lencería elegante y sofisticada. Descubre las últimas tendencias en ropa íntima femenina.",
+    "Descubre la mejor lencería premium en México. Conjuntos, brasieres y bodies de alta calidad. Diseños exclusivos que combinan elegancia y confort.",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
   domainName: "softer.mx",
   crisp: {

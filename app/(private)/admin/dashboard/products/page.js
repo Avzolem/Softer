@@ -16,7 +16,6 @@ export default function AdminProductsPage() {
       const response = await apiClient.get("/admin/products");
       setProducts(response.data);
     } catch (error) {
-      console.error("Error loading products:", error);
       toast.error("Error al cargar productos");
     } finally {
       setLoading(false);
@@ -42,7 +41,6 @@ export default function AdminProductsPage() {
       fetchProducts();
       setDeleteModal({ show: false, product: null });
     } catch (error) {
-      console.error("Error deleting product:", error);
       toast.error("Error al eliminar producto");
     }
   };
@@ -57,7 +55,6 @@ export default function AdminProductsPage() {
       toast.success("Estado actualizado");
       fetchProducts();
     } catch (error) {
-      console.error("Error updating stock:", error);
       toast.error("Error al actualizar estado");
     }
   };
@@ -72,7 +69,6 @@ export default function AdminProductsPage() {
       toast.success("Producto actualizado");
       fetchProducts();
     } catch (error) {
-      console.error("Error updating featured:", error);
       toast.error("Error al actualizar producto");
     }
   };

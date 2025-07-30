@@ -28,7 +28,6 @@ export async function GET(req) {
       totalUsers: total
     });
   } catch (error) {
-    console.error("Get users error:", error);
     return NextResponse.json(
       { error: "Error al obtener usuarios" },
       { status: 500 }
@@ -46,7 +45,6 @@ export async function POST(req) {
     
     return NextResponse.json(user, { status: 201 });
   } catch (error) {
-    console.error("Create user error:", error);
     return NextResponse.json(
       { error: error.message || "Error al crear usuario" },
       { status: 500 }
