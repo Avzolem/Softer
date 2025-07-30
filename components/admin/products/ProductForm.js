@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 const CATEGORIES = ["Conjuntos", "Brasieres", "Bodies", "Básicos", "Premium"];
 const COMMON_SIZES = ["32A", "32B", "34A", "34B", "34C", "36A", "36B", "36C", "38B", "S", "M", "L", "XL"];
-const COMMON_COLORS = ["Negro", "Blanco", "Rosa", "Nude", "Rojo", "Azul", "Gris", "Rosa palo", "Champagne", "Lavanda"];
+const COMMON_COLORS = ["Burgundy", "Rosa pastel", "Rosa", "Negro", "Blanco", "Azul", "Morado", "Lila", "Rojo", "Cafe", "Verde", "Fucsia", "Amarillo", "Gris", "Salmon", "Nude"];
 
 export default function ProductForm({ product, onSubmit, loading }) {
   const [uploadingImages, setUploadingImages] = useState(false);

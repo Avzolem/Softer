@@ -94,9 +94,10 @@ export default function CatalogoPage() {
         <section className="relative py-20 overflow-hidden">
           {/* Background Image with Grayscale Filter */}
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat filter grayscale"
+            className="absolute inset-0 bg-no-repeat filter grayscale"
             style={{
-              backgroundImage: 'url(/images/products/softer.mx_1644277198_2768720275276009026_35563853848.webp)',
+              backgroundImage: 'url(/images/catalogobackground.webp)',
+              backgroundSize: '100% auto',
               backgroundPosition: 'center center',
             }}
           ></div>

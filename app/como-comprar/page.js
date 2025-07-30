@@ -140,7 +140,7 @@ export default function ComoComprarPage() {
                 Ver Catálogo
               </a>
               <a
-                href="https://wa.me/5215591684946?text=Hola!%20Tengo%20una%20pregunta%20sobre%20mi%20pedido"
+                href="https://wa.me/5216143625087?text=Hola!%20Tengo%20una%20pregunta%20sobre%20mi%20pedido"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3 bg-transparent text-white border border-white hover:bg-white hover:text-black font-medium tracking-tight uppercase text-sm transition-all duration-200 apple-body"
