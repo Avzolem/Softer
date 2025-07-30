@@ -15,7 +15,8 @@ export default function Dashboard() {
         const { data: stats } = await apiClient.get("/admin/dashboard");
         setStats(stats);
       } catch (error) {
-        } finally {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
         setLoading(false);
       }
     };

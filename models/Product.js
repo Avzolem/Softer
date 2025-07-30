@@ -48,8 +48,17 @@ const productSchema = mongoose.Schema(
       required: true,
     }],
     sizes: [{
-      type: String,
-      required: true,
+      name: {
+        type: String,
+        required: true,
+      },
+      measurements: {
+        busto: String,
+        bajoBusto: String,
+        cintura: String,
+        cadera: String,
+        largo: String,
+      }
     }],
     isNew: {
       type: Boolean,
@@ -62,6 +71,10 @@ const productSchema = mongoose.Schema(
     inStock: {
       type: Boolean,
       default: true,
+    },
+    isOnSale: {
+      type: Boolean,
+      default: false,
     },
     sortOrder: {
       type: Number,

@@ -28,7 +28,7 @@ const Footer = () => {
             
             {/* Admin link - discreto */}
             <Link 
-              href="/admin/dashboard" 
+              href="/admin/login" 
               className="mt-2 text-xs text-gray-300 hover:text-gray-600 transition-colors duration-200 opacity-60 hover:opacity-100"
             >
               •

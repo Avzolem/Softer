@@ -16,9 +16,10 @@ export const useProducts = (filters = {}) => {
     return JSON.stringify({
       category: filters.category || '',
       featured: filters.featured || '',
-      inStock: filters.inStock || ''
+      inStock: filters.inStock || '',
+      onSale: filters.onSale || ''
     });
-  }, [filters.category, filters.featured, filters.inStock]);
+  }, [filters.category, filters.featured, filters.inStock, filters.onSale]);
 
   useEffect(() => {
     // Verificar caché primero
@@ -39,7 +40,7 @@ export const useProducts = (filters = {}) => {
         abortControllerRef.current.abort();
       }
     };
-  }, [filters.category, filters.featured, filters.inStock]);
+  }, [filters.category, filters.featured, filters.inStock, filters.onSale]);
 
   const fetchProducts = async () => {
     try {
@@ -58,6 +59,7 @@ export const useProducts = (filters = {}) => {
       if (filters.category) params.append('category', filters.category);
       if (filters.featured !== undefined) params.append('featured', filters.featured);
       if (filters.inStock !== undefined) params.append('inStock', filters.inStock);
+      if (filters.onSale !== undefined) params.append('onSale', filters.onSale);
       
       const response = await fetch(`/api/products?${params}`, {
         signal: abortControllerRef.current.signal

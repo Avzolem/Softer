@@ -12,8 +12,7 @@ let clientPromise;
 
 if (!uri) {
   console.group("⚠️ MONGODB_URI missing from .env");
-  )"
-  );
+  console.error("Please add MONGODB_URI to your .env file");
   console.groupEnd();
 } else if (process.env.NODE_ENV === "development") {
   if (!global._mongoClientPromise) {

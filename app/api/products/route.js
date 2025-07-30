@@ -9,6 +9,7 @@ export async function GET(req) {
     const category = searchParams.get('category');
     const featured = searchParams.get('featured');
     const inStock = searchParams.get('inStock');
+    const onSale = searchParams.get('onSale');
     
     // Conectar a MongoDB
     await connectMongo();
@@ -25,6 +26,14 @@ export async function GET(req) {
     
     if (inStock === 'true') {
       query.inStock = true;
+    }
+    
+    if (onSale === 'true') {
+      query.isOnSale = true;
+    } else if (onSale !== 'true' && onSale !== null) {
+      // Si no se especifica explícitamente que se quieren productos en oferta,
+      // excluir productos en oferta del catálogo regular
+      query.isOnSale = { $ne: true };
     }
     
     // Obtener productos de la base de datos
@@ -52,6 +61,7 @@ export async function GET(req) {
         isNew: productObj.isNew || false,
         featured: productObj.featured || false,
         inStock: productObj.inStock !== undefined ? productObj.inStock : true,
+        isOnSale: productObj.isOnSale || false,
         sortOrder: productObj.sortOrder || 0
       };
     });

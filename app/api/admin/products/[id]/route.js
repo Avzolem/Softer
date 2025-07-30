@@ -31,6 +31,28 @@ export async function PUT(req, { params }) {
     await connectDB();
     const data = await req.json();
     
+    // Asegurar que solo haya una imagen principal
+    if (data.images && data.images.length > 0) {
+      const mainImages = data.images.filter(img => img.isMain);
+      if (mainImages.length > 1) {
+        // Si hay más de una imagen principal, dejar solo la última
+        data.images = data.images.map(img => ({
+          ...img,
+          isMain: false
+        }));
+        // Marcar la última imagen principal seleccionada
+        const lastMainIndex = data.images.findLastIndex(img => 
+          mainImages.some(main => main.url === img.url)
+        );
+        if (lastMainIndex >= 0) {
+          data.images[lastMainIndex].isMain = true;
+        }
+      } else if (mainImages.length === 0) {
+        // Si no hay imagen principal, marcar la primera
+        data.images[0].isMain = true;
+      }
+    }
+    
     const product = await Product.findByIdAndUpdate(
       params.id,
       data,

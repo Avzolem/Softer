@@ -29,7 +29,7 @@ const NovedadesSection = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
             {featuredProducts.slice(0, 6).map((product, index) => (
               <div key={product.id || product._id} className="slide-up" style={{animationDelay: `${index * 0.1}s`}}>
-                <ProductCard product={product} priority={index < 3} />
+                <ProductCard product={product} priority={index < 3} redirectToCatalog={true} />
               </div>
             ))}
           </div>

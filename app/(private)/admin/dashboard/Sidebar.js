@@ -34,6 +34,11 @@ const sidebarOptions = [
     label: "Usuarios",
     icon: UsersIcon,
   },
+  {
+    href: "/admin/dashboard/timer",
+    label: "Timer",
+    icon: CubeIcon,
+  },
 ];
 
 export default function Sidebar() {

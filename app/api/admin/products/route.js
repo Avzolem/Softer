@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/libs/mongoose";
 import Product from "@/models/Product";
-import { auth } from "@/auth";
+import { auth } from "@/libs/next-auth";
 
 // GET all products
 export async function GET() {
@@ -40,6 +40,21 @@ export async function POST(req) {
   try {
     await connectDB();
     const data = await req.json();
+    
+    // Asegurar que solo haya una imagen principal
+    if (data.images && data.images.length > 0) {
+      const mainImages = data.images.filter(img => img.isMain);
+      if (mainImages.length > 1) {
+        // Si hay más de una imagen principal, dejar solo la última
+        data.images = data.images.map((img, index) => ({
+          ...img,
+          isMain: index === data.images.length - 1
+        }));
+      } else if (mainImages.length === 0) {
+        // Si no hay imagen principal, marcar la primera
+        data.images[0].isMain = true;
+      }
+    }
     
     const product = await Product.create(data);
     

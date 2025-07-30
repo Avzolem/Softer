@@ -20,6 +20,10 @@ const links = [
     href: "/como-comprar",
     label: "Cómo Comprar?",
   },
+  {
+    href: "/ofertas",
+    label: "Ofertas",
+  },
 ];
 
 // Botones de redes sociales y carrito

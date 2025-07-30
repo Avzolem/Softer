@@ -70,11 +70,12 @@ const Cart = () => {
                   <div key={item.cartKey} className="glass-effect p-4 rounded-lg fade-in">
                     <div className="flex gap-4">
                       {/* Product Image */}
-                      <div className="relative w-24 h-24 flex-shrink-0">
+                      <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
                         <ProductImage
-                          src={item.image}
+                          src={item.images?.find(img => img.isMain)?.url || item.images?.[0]?.url || item.image}
                           alt={item.name}
-                          className="w-full h-full object-cover rounded-lg"
+                          containerClassName="w-full h-full"
+                          className="rounded-lg"
                         />
                       </div>
 
@@ -84,7 +85,7 @@ const Cart = () => {
                         <p className="text-xs text-gray-600 mt-1">
                           Talla: {item.selectedSize} | Color: {item.selectedColor}
                         </p>
-                        <p className="text-pink-600 font-bold mt-2">
+                        <p className="text-black font-bold mt-2">
                           ${item.price.toLocaleString('es-MX')}
                         </p>
                       </div>
@@ -157,7 +158,7 @@ const Cart = () => {
 
               <Link
                 href="/checkout"
-                className="btn btn-block softer-gradient text-white border-0 hover-lift"
+                className="btn btn-block bg-black text-white border-0 hover:bg-gray-800 transition-colors duration-200"
                 onClick={() => setIsCartOpen(false)}
               >
                 Proceder al pago

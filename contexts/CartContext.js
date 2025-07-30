@@ -38,13 +38,11 @@ export const CartProvider = ({ children }) => {
     }
 
     const cartKey = `${product.id}-${selectedSize}-${selectedColor}`;
+    const existingItem = cartItems.find(item => item.cartKey === cartKey);
     
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.cartKey === cartKey);
-      
       if (existingItem) {
         // Si ya existe, aumentar cantidad
-        toast.success('Cantidad actualizada en el carrito');
         return prevItems.map(item =>
           item.cartKey === cartKey
             ? { ...item, quantity: item.quantity + 1 }
@@ -52,7 +50,6 @@ export const CartProvider = ({ children }) => {
         );
       } else {
         // Si no existe, agregar nuevo
-        toast.success('Producto agregado al carrito');
         return [...prevItems, {
           ...product,
           cartKey,
@@ -62,6 +59,15 @@ export const CartProvider = ({ children }) => {
         }];
       }
     });
+    
+    // Mostrar toast después de actualizar el estado
+    setTimeout(() => {
+      if (existingItem) {
+        toast.success('Cantidad actualizada en el carrito');
+      } else {
+        toast.success('Producto agregado al carrito');
+      }
+    }, 0);
     
     // Abrir carrito automáticamente
     setIsCartOpen(true);
@@ -86,14 +92,20 @@ export const CartProvider = ({ children }) => {
   // Eliminar producto del carrito
   const removeFromCart = (cartKey) => {
     setCartItems(prevItems => prevItems.filter(item => item.cartKey !== cartKey));
-    toast.success('Producto eliminado del carrito');
+    // Usar setTimeout para evitar el error de setState durante el render
+    setTimeout(() => {
+      toast.success('Producto eliminado del carrito');
+    }, 0);
   };
 
   // Limpiar carrito
   const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem('softer-cart');
-    toast.success('Carrito vaciado');
+    // Usar setTimeout para evitar el error de setState durante el render
+    setTimeout(() => {
+      toast.success('Carrito vaciado');
+    }, 0);
   };
 
   // Calcular totales

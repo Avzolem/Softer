@@ -21,7 +21,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         // Verificar credenciales de admin
-        if (credentials?.username === "solesuave" && credentials?.password === "kipo") {
+        if (
+          credentials?.username === process.env.ADMIN_USERNAME &&
+          credentials?.password === process.env.ADMIN_PASSWORD
+        ) {
           return {
             id: "admin-user",
             name: "Administrador",
@@ -120,6 +123,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: "/admin/login",
+  },
   theme: {
     brandColor: config.colors.main,
     // Add you own logo below. Recommended size is rectangle (i.e. 200x50px) and show your logo + name.
@@ -141,7 +147,10 @@ export const authOptions = {
       },
       async authorize(credentials) {
         // Verificar credenciales de admin
-        if (credentials?.username === "solesuave" && credentials?.password === "kipo") {
+        if (
+          credentials?.username === process.env.ADMIN_USERNAME &&
+          credentials?.password === process.env.ADMIN_PASSWORD
+        ) {
           return {
             id: "admin-user",
             name: "Administrador",
@@ -226,6 +235,9 @@ export const authOptions = {
   },
   session: {
     strategy: "jwt",
+  },
+  pages: {
+    signIn: "/admin/login",
   },
   theme: {
     brandColor: config.colors.main,

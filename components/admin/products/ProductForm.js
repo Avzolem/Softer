@@ -10,6 +10,7 @@ const COMMON_SIZES = ["32A", "32B", "34A", "34B", "34C", "36A", "36B", "36C", "3
 const COMMON_COLORS = ["Negro", "Blanco", "Rosa", "Nude", "Rojo", "Azul", "Gris", "Rosa palo", "Champagne", "Lavanda"];
 
 export default function ProductForm({ product, onSubmit, loading }) {
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [formData, setFormData] = useState({
     name: product?.name || "",
     description: product?.description || "",
@@ -22,11 +23,13 @@ export default function ProductForm({ product, onSubmit, loading }) {
     isNew: product?.isNew || false,
     featured: product?.featured || false,
     inStock: product?.inStock || true,
+    isOnSale: product?.isOnSale || false,
   });
 
   const [newColor, setNewColor] = useState("");
   const [newSize, setNewSize] = useState("");
   const [pendingImages, setPendingImages] = useState([]);
+  const [editingMeasurements, setEditingMeasurements] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -54,19 +57,19 @@ export default function ProductForm({ product, onSubmit, loading }) {
   };
 
   const handleAddSize = () => {
-    if (newSize && !formData.sizes.includes(newSize)) {
+    if (newSize && !formData.sizes.find(s => s.name === newSize)) {
       setFormData(prev => ({
         ...prev,
-        sizes: [...prev.sizes, newSize]
+        sizes: [...prev.sizes, { name: newSize, measurements: {} }]
       }));
       setNewSize("");
     }
   };
 
-  const handleRemoveSize = (size) => {
+  const handleRemoveSize = (sizeName) => {
     setFormData(prev => ({
       ...prev,
-      sizes: prev.sizes.filter(s => s !== size)
+      sizes: prev.sizes.filter(s => s.name !== sizeName)
     }));
   };
 
@@ -79,17 +82,28 @@ export default function ProductForm({ product, onSubmit, loading }) {
     }
   };
 
-  const handleQuickAddSize = (size) => {
-    if (!formData.sizes.includes(size)) {
+  const handleQuickAddSize = (sizeName) => {
+    if (!formData.sizes.find(s => s.name === sizeName)) {
       setFormData(prev => ({
         ...prev,
-        sizes: [...prev.sizes, size]
+        sizes: [...prev.sizes, { name: sizeName, measurements: {} }]
       }));
     }
   };
 
   const handleImagesChange = (images) => {
     setPendingImages(images);
+  };
+
+  const handleSizeMeasurementChange = (sizeName, measurementType, value) => {
+    setFormData(prev => ({
+      ...prev,
+      sizes: prev.sizes.map(size => 
+        size.name === sizeName 
+          ? { ...size, measurements: { ...size.measurements, [measurementType]: value } }
+          : size
+      )
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -100,6 +114,9 @@ export default function ProductForm({ product, onSubmit, loading }) {
       toast.error("Debes agregar al menos una imagen del producto");
       return;
     }
+    
+    // Iniciar estado de carga de imágenes
+    setUploadingImages(true);
     
     // Subir las nuevas imágenes
     const uploadedImages = [];
@@ -137,9 +154,13 @@ export default function ProductForm({ product, onSubmit, loading }) {
         toast.success(`Imagen ${img.file.name} subida correctamente`);
       } catch (error) {
         toast.error(`Error al subir imagen: ${error.message}`);
+        setUploadingImages(false);
         return;
       }
     }
+    
+    // Finalizar estado de carga de imágenes
+    setUploadingImages(false);
     
     // Combinar imágenes existentes con las nuevas
     const allImages = [...formData.images, ...uploadedImages];
@@ -158,259 +179,351 @@ export default function ProductForm({ product, onSubmit, loading }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Información básica */}
-      <div className="glass-effect p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Información Básica</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Nombre del producto *</span>
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="input input-bordered"
-              required
-            />
-          </div>
-
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Categoría *</span>
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="select select-bordered"
-              required
-            >
-              <option value="">Selecciona una categoría</option>
-              {CATEGORIES.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-control md:col-span-2">
-            <label className="label">
-              <span className="label-text">Descripción *</span>
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="textarea textarea-bordered"
-              rows="3"
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Precios */}
-      <div className="glass-effect p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Precios</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Precio actual *</span>
-            </label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="input input-bordered"
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
-
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Precio original (opcional)</span>
-            </label>
-            <input
-              type="number"
-              name="originalPrice"
-              value={formData.originalPrice}
-              onChange={handleChange}
-              className="input input-bordered"
-              min="0"
-              step="0.01"
-            />
-            <label className="label">
-              <span className="label-text-alt">Se mostrará tachado si es mayor al precio actual</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
+    <form onSubmit={handleSubmit} className="space-y-3">
       {/* Imágenes */}
-      <div className="glass-effect p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Imágenes del Producto</h2>
+      <div className="glass-effect p-4 rounded-lg">
+        <h2 className="text-lg font-semibold mb-3">Imágenes del Producto</h2>
         <ProductImageUpload 
           images={formData.images}
           onImagesChange={handleImagesChange}
         />
-        <p className="text-sm text-gray-600 mt-2">
+        <p className="text-xs text-gray-600 mt-1">
           Las imágenes se subirán automáticamente al guardar el producto.
         </p>
       </div>
 
-      {/* Colores */}
-      <div className="glass-effect p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Colores disponibles</h2>
-        
-        {/* Colores actuales */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {formData.colors.map(color => (
-            <div key={color} className="badge badge-lg gap-2">
-              {color}
-              <button
-                type="button"
-                onClick={() => handleRemoveColor(color)}
-                className="btn btn-ghost btn-xs"
-              >
-                ×
-              </button>
+      {/* Información básica y Precios */}
+      <div className="grid lg:grid-cols-2 gap-3">
+        <div className="glass-effect p-4 rounded-lg">
+          <h2 className="text-lg font-semibold mb-3">Información Básica</h2>
+          <div className="space-y-3">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Nombre del producto *</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="input input-bordered input-sm"
+                required
+              />
             </div>
-          ))}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Categoría *</span>
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="select select-bordered select-sm"
+                required
+              >
+                <option value="">Selecciona una categoría</option>
+                {CATEGORIES.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Descripción *</span>
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="textarea textarea-bordered textarea-sm"
+                rows="2"
+                required
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Agregar color */}
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            value={newColor}
-            onChange={(e) => setNewColor(e.target.value)}
-            className="input input-bordered input-sm flex-1"
-            placeholder="Agregar color personalizado"
-          />
-          <button
-            type="button"
-            onClick={handleAddColor}
-            className="btn btn-sm btn-primary"
-          >
-            Agregar
-          </button>
-        </div>
-
-        {/* Colores rápidos */}
-        <div className="flex flex-wrap gap-2">
-          {COMMON_COLORS.map(color => (
-            <button
-              key={color}
-              type="button"
-              onClick={() => handleQuickAddColor(color)}
-              className="btn btn-xs"
-              disabled={formData.colors.includes(color)}
-            >
-              {color}
-            </button>
-          ))}
+        <div className="glass-effect p-4 rounded-lg">
+          <h2 className="text-lg font-semibold mb-3">Precios</h2>
+          <div className="space-y-3">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Precio actual *</span>
+              </label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                className="input input-bordered input-sm"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Precio original (opcional)</span>
+              </label>
+              <input
+                type="number"
+                name="originalPrice"
+                value={formData.originalPrice}
+                onChange={handleChange}
+                className="input input-bordered input-sm"
+                min="0"
+                step="0.01"
+              />
+              <label className="label">
+                <span className="label-text-alt text-xs">Se mostrará tachado si es mayor al precio actual</span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Tallas */}
-      <div className="glass-effect p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Tallas disponibles</h2>
-        
-        {/* Tallas actuales */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {formData.sizes.map(size => (
-            <div key={size} className="badge badge-lg gap-2">
-              {size}
-              <button
-                type="button"
-                onClick={() => handleRemoveSize(size)}
-                className="btn btn-ghost btn-xs"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
+      {/* Colores y Tallas */}
+      <div className="grid lg:grid-cols-2 gap-3">
+        {/* Colores */}
+        <div className="glass-effect p-4 rounded-lg">
+          <h2 className="text-lg font-semibold mb-3">Colores disponibles</h2>
+          
+          {/* Colores actuales */}
+          <div className="flex flex-wrap gap-1 mb-2">
+            {formData.colors.map(color => (
+              <div key={color} className="badge badge-sm gap-1">
+                {color}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveColor(color)}
+                  className="text-xs"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
 
-        {/* Agregar talla */}
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            value={newSize}
-            onChange={(e) => setNewSize(e.target.value)}
-            className="input input-bordered input-sm flex-1"
-            placeholder="Agregar talla personalizada"
-          />
-          <button
-            type="button"
-            onClick={handleAddSize}
-            className="btn btn-sm btn-primary"
-          >
-            Agregar
-          </button>
-        </div>
-
-        {/* Tallas rápidas */}
-        <div className="flex flex-wrap gap-2">
-          {COMMON_SIZES.map(size => (
+          {/* Agregar color */}
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={newColor}
+              onChange={(e) => setNewColor(e.target.value)}
+              className="input input-bordered input-xs flex-1"
+              placeholder="Nuevo color"
+            />
             <button
-              key={size}
               type="button"
-              onClick={() => handleQuickAddSize(size)}
-              className="btn btn-xs"
-              disabled={formData.sizes.includes(size)}
+              onClick={handleAddColor}
+              className="btn btn-xs btn-primary"
             >
-              {size}
+              +
             </button>
-          ))}
+          </div>
+
+          {/* Colores rápidos */}
+          <div className="flex flex-wrap gap-1">
+            {COMMON_COLORS.map(color => (
+              <button
+                key={color}
+                type="button"
+                onClick={() => handleQuickAddColor(color)}
+                className="btn btn-xs"
+                disabled={formData.colors.includes(color)}
+              >
+                {color}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tallas */}
+        <div className="glass-effect p-4 rounded-lg">
+          <h2 className="text-lg font-semibold mb-3">Tallas disponibles</h2>
+          
+          {/* Tallas actuales */}
+          <div className="flex flex-wrap gap-1 mb-2">
+            {formData.sizes.map(size => (
+              <div key={size.name} className="flex items-center gap-1">
+                <div className="badge badge-sm gap-1">
+                  {size.name}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSize(size.name)}
+                    className="text-xs"
+                  >
+                    ×
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEditingMeasurements(editingMeasurements === size.name ? null : size.name)}
+                  className="btn btn-xs btn-outline"
+                >
+                  {editingMeasurements === size.name ? 'Ocultar' : 'Medidas'}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Agregar talla */}
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={newSize}
+              onChange={(e) => setNewSize(e.target.value)}
+              className="input input-bordered input-xs flex-1"
+              placeholder="Nueva talla"
+            />
+            <button
+              type="button"
+              onClick={handleAddSize}
+              className="btn btn-xs btn-primary"
+            >
+              +
+            </button>
+          </div>
+
+          {/* Tallas rápidas */}
+          <div className="flex flex-wrap gap-1">
+            {COMMON_SIZES.map(size => (
+              <button
+                key={size}
+                type="button"
+                onClick={() => handleQuickAddSize(size)}
+                className="btn btn-xs"
+                disabled={formData.sizes.find(s => s.name === size)}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+
+          {/* Editor de medidas */}
+          {editingMeasurements && (
+            <div className="bg-base-200 p-2 rounded-lg mt-3">
+              <h4 className="font-medium mb-2 text-sm">Medidas para talla {editingMeasurements}:</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="label text-xs py-1">
+                    <span className="label-text text-xs">Busto</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="82-86 cm"
+                    value={formData.sizes.find(s => s.name === editingMeasurements)?.measurements?.busto || ''}
+                    onChange={(e) => handleSizeMeasurementChange(editingMeasurements, 'busto', e.target.value)}
+                    className="input input-bordered input-xs w-full"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs py-1">
+                    <span className="label-text text-xs">Bajo busto</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="68-72 cm"
+                    value={formData.sizes.find(s => s.name === editingMeasurements)?.measurements?.bajoBusto || ''}
+                    onChange={(e) => handleSizeMeasurementChange(editingMeasurements, 'bajoBusto', e.target.value)}
+                    className="input input-bordered input-xs w-full"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs py-1">
+                    <span className="label-text text-xs">Cintura</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="64-68 cm"
+                    value={formData.sizes.find(s => s.name === editingMeasurements)?.measurements?.cintura || ''}
+                    onChange={(e) => handleSizeMeasurementChange(editingMeasurements, 'cintura', e.target.value)}
+                    className="input input-bordered input-xs w-full"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs py-1">
+                    <span className="label-text text-xs">Cadera</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="88-92 cm"
+                    value={formData.sizes.find(s => s.name === editingMeasurements)?.measurements?.cadera || ''}
+                    onChange={(e) => handleSizeMeasurementChange(editingMeasurements, 'cadera', e.target.value)}
+                    className="input input-bordered input-xs w-full"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="label text-xs py-1">
+                    <span className="label-text text-xs">Largo (opcional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="70-75 cm"
+                    value={formData.sizes.find(s => s.name === editingMeasurements)?.measurements?.largo || ''}
+                    onChange={(e) => handleSizeMeasurementChange(editingMeasurements, 'largo', e.target.value)}
+                    className="input input-bordered input-xs w-full"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Estados */}
-      <div className="glass-effect p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Estados</h2>
-        <div className="space-y-4">
+      <div className="glass-effect p-4 rounded-lg">
+        <h2 className="text-lg font-semibold mb-3">Estados</h2>
+        <div className="grid md:grid-cols-2 gap-3">
           <div className="form-control">
-            <label className="label cursor-pointer">
-              <span className="label-text">En stock</span>
+            <label className="label cursor-pointer justify-start gap-2">
               <input
                 type="checkbox"
                 name="inStock"
                 checked={formData.inStock}
                 onChange={handleChange}
-                className="checkbox checkbox-primary"
+                className="checkbox checkbox-primary checkbox-sm"
               />
+              <span className="label-text">En stock</span>
             </label>
           </div>
 
           <div className="form-control">
-            <label className="label cursor-pointer">
-              <span className="label-text">Producto destacado</span>
+            <label className="label cursor-pointer justify-start gap-2">
               <input
                 type="checkbox"
                 name="featured"
                 checked={formData.featured}
                 onChange={handleChange}
-                className="checkbox checkbox-primary"
+                className="checkbox checkbox-primary checkbox-sm"
               />
+              <span className="label-text">Producto destacado</span>
             </label>
           </div>
 
           <div className="form-control">
-            <label className="label cursor-pointer">
-              <span className="label-text">Producto nuevo</span>
+            <label className="label cursor-pointer justify-start gap-2">
               <input
                 type="checkbox"
                 name="isNew"
                 checked={formData.isNew}
                 onChange={handleChange}
-                className="checkbox checkbox-primary"
+                className="checkbox checkbox-primary checkbox-sm"
               />
+              <span className="label-text">Producto nuevo</span>
+            </label>
+          </div>
+
+          <div className="form-control">
+            <label className="label cursor-pointer justify-start gap-2">
+              <input
+                type="checkbox"
+                name="isOnSale"
+                checked={formData.isOnSale}
+                onChange={handleChange}
+                className="checkbox checkbox-primary checkbox-sm"
+              />
+              <span className="label-text">En oferta</span>
             </label>
           </div>
         </div>
@@ -426,13 +539,13 @@ export default function ProductForm({ product, onSubmit, loading }) {
         </Link>
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || uploadingImages}
           className="btn btn-primary"
         >
-          {loading ? (
+          {loading || uploadingImages ? (
             <>
               <span className="loading loading-spinner"></span>
-              Guardando...
+              {uploadingImages ? 'Subiendo imágenes...' : 'Guardando...'}
             </>
           ) : (
             <>

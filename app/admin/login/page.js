@@ -18,18 +18,29 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
 
-    const result = await signIn("credentials", {
-      username: credentials.username,
-      password: credentials.password,
-      redirect: false,
-    });
+    try {
+      const result = await signIn("admin-credentials", {
+        username: credentials.username,
+        password: credentials.password,
+        redirect: false,
+      });
 
-    if (result?.error) {
-      toast.error("Credenciales incorrectas");
-    } else {
-      toast.success("Inicio de sesión exitoso");
-      router.push("/admin/dashboard");
-      router.refresh();
+      console.log("Login result:", result);
+
+      if (result?.error) {
+        toast.error("Credenciales incorrectas");
+        console.error("Login error:", result.error);
+      } else if (result?.ok && result?.status === 200) {
+        toast.success("Inicio de sesión exitoso");
+        // Forzar recarga completa de la página hacia el dashboard
+        window.location.replace("/admin/dashboard");
+      } else {
+        toast.error("Error en el inicio de sesión");
+        console.error("Unexpected result:", result);
+      }
+    } catch (error) {
+      toast.error("Error de conexión");
+      console.error("Login exception:", error);
     }
     
     setLoading(false);
