@@ -25,22 +25,16 @@ export default function AdminLogin() {
         redirect: false,
       });
 
-      console.log("Login result:", result);
-
       if (result?.error) {
         toast.error("Credenciales incorrectas");
-        console.error("Login error:", result.error);
       } else if (result?.ok && result?.status === 200) {
         toast.success("Inicio de sesión exitoso");
-        // Forzar recarga completa de la página hacia el dashboard
         window.location.replace("/admin/dashboard");
       } else {
         toast.error("Error en el inicio de sesión");
-        console.error("Unexpected result:", result);
       }
     } catch (error) {
       toast.error("Error de conexión");
-      console.error("Login exception:", error);
     }
     
     setLoading(false);

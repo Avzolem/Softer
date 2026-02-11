@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { uploadImage } from "@/libs/cloudinary";
+import { requireAdmin } from "@/libs/admin-auth";
 
 export async function POST(req) {
+  const { authorized, response } = await requireAdmin();
+  if (!authorized) return response;
+
   try {
     const formData = await req.formData();
     const file = formData.get("file");
@@ -42,7 +46,7 @@ export async function POST(req) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: error.message || "Failed to upload image" },
+      { error: "Failed to upload image" },
       { status: 500 }
     );
   }

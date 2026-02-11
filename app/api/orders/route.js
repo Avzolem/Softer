@@ -7,10 +7,10 @@ import Product from "@/models/Product";
 export async function POST(req) {
   try {
     await connectMongo();
-    
+
     const body = await req.json();
     const { customer, shippingAddress, items, paymentMethod } = body;
-    
+
     // Validar que hay productos en el carrito
     if (!items || items.length === 0) {
       return NextResponse.json(
@@ -18,48 +18,50 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-    
-    // Calcular totales y verificar stock
+
+    // Calcular totales y verificar stock con precios del servidor
     let subtotal = 0;
     const orderItems = [];
-    
+
     for (const item of items) {
       const product = await Product.findById(item.productId);
-      
+
       if (!product) {
         return NextResponse.json(
           { error: `Producto no encontrado: ${item.name}` },
           { status: 404 }
         );
       }
-      
+
       if (!product.inStock) {
         return NextResponse.json(
           { error: `Producto sin stock: ${product.name}` },
           { status: 400 }
         );
       }
-      
-      subtotal += item.price * item.quantity;
-      
+
+      // Usar precio del servidor, nunca del cliente
+      const serverPrice = product.price;
+      subtotal += serverPrice * item.quantity;
+
       orderItems.push({
         product: product._id,
         name: product.name,
-        price: item.price,
+        price: serverPrice,
         quantity: item.quantity,
         size: item.size,
         color: item.color,
         image: product.image
       });
     }
-    
+
     // Calcular envío (gratis arriba de $999)
     const shippingCost = subtotal >= 999 ? 0 : 99;
     const total = subtotal + shippingCost;
-    
+
     // Generar número de orden
     const orderNumber = await Order.generateOrderNumber();
-    
+
     // Crear la orden
     const order = await Order.create({
       orderNumber,
@@ -71,19 +73,16 @@ export async function POST(req) {
       total,
       paymentMethod,
       status: "pending",
-      paymentStatus: paymentMethod === "cash" ? "pending" : "pending"
+      paymentStatus: "pending"
     });
-    
-    // Si es pago con Stripe, devolver la orden para procesar el pago
-    // Si es contra entrega, la orden ya está creada
-    
+
     return NextResponse.json({
       orderId: order._id,
       orderNumber: order.orderNumber,
       total: order.total,
       paymentMethod: order.paymentMethod
     });
-    
+
   } catch (error) {
     return NextResponse.json(
       { error: "Error al crear la orden" },
@@ -96,33 +95,51 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     await connectMongo();
-    
+
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get('id');
     const orderNumber = searchParams.get('orderNumber');
-    
+
     let order;
-    
+
     if (orderId) {
-      order = await Order.findById(orderId).populate('items.product');
+      order = await Order.findById(orderId);
     } else if (orderNumber) {
-      order = await Order.findOne({ orderNumber }).populate('items.product');
+      order = await Order.findOne({ orderNumber });
     } else {
       return NextResponse.json(
         { error: "Debe proporcionar ID o número de orden" },
         { status: 400 }
       );
     }
-    
+
     if (!order) {
       return NextResponse.json(
         { error: "Orden no encontrada" },
         { status: 404 }
       );
     }
-    
-    return NextResponse.json(order);
-    
+
+    // Devolver solo campos necesarios para confirmación (sin PII sensible)
+    return NextResponse.json({
+      orderNumber: order.orderNumber,
+      items: order.items.map(item => ({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        size: item.size,
+        color: item.color,
+        image: item.image
+      })),
+      subtotal: order.subtotal,
+      shippingCost: order.shippingCost,
+      total: order.total,
+      status: order.status,
+      paymentMethod: order.paymentMethod,
+      paymentStatus: order.paymentStatus,
+      createdAt: order.createdAt
+    });
+
   } catch (error) {
     return NextResponse.json(
       { error: "Error al obtener la orden" },

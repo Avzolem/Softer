@@ -1,9 +1,16 @@
-// Middleware desactivado - la protección se maneja en el layout del dashboard
-export function middleware(request) {
-  // No hacer nada, dejar que el layout maneje la autenticación
-  return;
+import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+
+export async function middleware(request) {
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+
+  if (!token || token.role !== "admin") {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [], // No interceptar ninguna ruta
+  matcher: ["/api/admin/:path*"],
 };
